@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Map</title>
+    <title>Leaflet Map - Tunisia Center</title>
     <link rel="stylesheet" href="leaflet.css">
     <style>
         #map {
@@ -28,22 +28,40 @@
 
     <script src="leaflet.js"></script>
     <script>
-        var map = L.map('map').setView([36.8065, 10.1815], 13); // Default: Tunis
+        // Initialize the map centered on Tunisia
+        var map = L.map('map').setView([34.0, 9.0], 6); // Tunisia center
+
+        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        var marker = L.marker([36.8065, 10.1815], { draggable: true }).addTo(map);
+        // Add a customizable, draggable red pin using a local SVG
+        var marker = L.marker([34.0, 9.0], {
+            draggable: true,
+            title: "Drag me!",
+            icon: L.icon({
+                iconUrl: 'red-pin.svg',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34]
+            })
+        }).addTo(map);
 
+        // Listen to dragging event
         marker.on('dragend', function (e) {
             var latlng = marker.getLatLng();
             console.log('Dragged to:', latlng.lat, latlng.lng);
 
-            // Send back to Flutter (if used in WebView)
+            // If in WebView (Flutter app), send new position
             if (window.FlutterWebviewPlugin) {
-                window.FlutterWebviewPlugin.postMessage(JSON.stringify(latlng));
+                window.FlutterWebviewPlugin.postMessage(JSON.stringify({
+                    latitude: latlng.lat,
+                    longitude: latlng.lng
+                }));
             }
         });
+
     </script>
 
 </body>
